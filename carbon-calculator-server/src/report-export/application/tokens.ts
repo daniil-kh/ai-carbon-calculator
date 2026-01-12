@@ -1,0 +1,2 @@
+export const PDF_REPORT_RENDERER = Symbol('PDF_REPORT_RENDERER');
+

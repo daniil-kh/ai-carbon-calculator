@@ -1,0 +1,18 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model CarbonReport {
+  id        String   @id
+  createdAt DateTime
+  input     Json
+  totals    Json
+
+  @@index([createdAt])
+}
+
