@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=carbon
+      - POSTGRES_PASSWORD=carbon
+      - POSTGRES_DB=carbon_calculator
+    ports:
+      - "5432:5432"
+    volumes:
+      - carbon_calculator_pgdata:/var/lib/postgresql/data
+
+  server:
+    build:
+      context: ./carbon-calculator-server
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=postgresql://carbon:carbon@db:5432/carbon_calculator?schema=public
+    ports:
+      - "3001:3000"
+    depends_on:
+      - db
+    command: ["sh", "-c", "pnpm prisma:db:push && node dist/main"]
+
+  client:
+    build:
+      context: ./carbon-calculator-client
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+      - CARBON_API_BASE_URL=http://server:3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+
+volumes:
+  carbon_calculator_pgdata:
